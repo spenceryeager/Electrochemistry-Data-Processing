@@ -6,6 +6,9 @@ import pandas as pd
 def main():
     #specify path for now, implement file grab later
     workingfile = '/home/spenceryeager/Documents/calculations/chopper_data/Hour 23 1000mA.txt'
+    global directory 
+    directory = '/home/spenceryeager/Documents/calculations/chopper_data/'
+    global data # data must be global to be called in onselect function
     data = pd.read_csv(workingfile, sep=',', skiprows=rowskip(workingfile))
     fig, ax = plt.subplots()
     ax.plot(data['Potential/V'], data[' Current/A'], color='blue')
@@ -15,10 +18,12 @@ def main():
 
 
 def onselect(vmin, vmax):
-    global max_compval
-    global min_compval
-    max_compval = vmax
-    min_compval = vmin
+    indmin, indmax = np.searchsorted(data['Potential/V'], (vmin, vmax))
+    # take the indices here, get the max current and min current.
+    # max and min should be right near where the selection was made. 
+    # take the potential value @ both currents and avg them
+    # write to a CSV file for further analysis.
+    print(indmin, indmax)
 
 
 def rowskip(working_file):
