@@ -10,8 +10,16 @@ def main():
     directory = '/home/spenceryeager/Documents/calculations/chopper_data/'
     global data # data must be global to be called in onselect function
     data = pd.read_csv(workingfile, sep=',', skiprows=rowskip(workingfile))
+    columns = ['Potential (V)', 'Dark Current (A)', 'On Current (A)', 'Delta Current (A)']
+    global data_points # generated data will be appended to this
+    data_points = pd.DataFrame(columns = columns)
+    
+    #Plotting
     fig, ax = plt.subplots()
     ax.plot(data['Potential/V'], data[' Current/A'], color='blue')
+    ax.set_xlabel('Potential (V)')
+    ax.set_ylabel('Current (A)')
+    ax.set_title('Select the potential range that contains the on/off current\nClose the graph when finished selecting points')
     rectprops = dict(facecolor='blue', alpha=0.4)
     span = mwidgets.SpanSelector(ax, onselect, 'horizontal', rectprops=rectprops)
     plt.show()
@@ -19,11 +27,18 @@ def main():
 
 def onselect(vmin, vmax):
     indmin, indmax = np.searchsorted(data['Potential/V'], (vmin, vmax))
+    selection(indmin, indmax)
     # take the indices here, get the max current and min current.
     # max and min should be right near where the selection was made. 
     # take the potential value @ both currents and avg them
     # write to a CSV file for further analysis.
     print(indmin, indmax)
+
+
+def selection(indmin, indmax):
+    potential_array = np.array(data['Potential/V'][indmin:indmax])
+    current_array = np.array(data[' Current/A'][indmin:indmax])
+    print(potential_array)
 
 
 def rowskip(working_file):
