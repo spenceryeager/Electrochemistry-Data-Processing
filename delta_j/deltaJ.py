@@ -24,16 +24,20 @@ def main():
     span = mwidgets.SpanSelector(ax, onselect, 'horizontal', rectprops=rectprops)
     plt.show()
 
-
+    # Double checking selected points with graph
+    plt.plot(data['Potential/V'], data[' Current/A'], color='blue')
+    plt.scatter(output_data['Potential (V)'], output_data['Dark Current (A)'], label='Off Current', marker='o', color='red')
+    plt.scatter(output_data['Potential (V)'], output_data['On Current (A)'], label='On Current', marker='o', color='darkorange')
+    plt.title('Double check points and make sure they look reasonable')
+    plt.xlabel('Potential (V)')
+    plt.ylabel('Current (A)')
+    plt.legend(loc='best')
+    plt.show()
 
 def onselect(vmin, vmax):
     indmin, indmax = np.searchsorted(data['Potential/V'], (vmin, vmax))
     selection(indmin, indmax)
-    # take the indices here, get the max current and min current.
-    # max and min should be right near where the selection was made. 
-    # take the potential value @ both currents and avg them
     # write to a CSV file for further analysis.
-    print(indmin, indmax)
 
 
 def selection(indmin, indmax):
@@ -55,8 +59,6 @@ def selection(indmin, indmax):
         medianV = np.median(potential_array[indon:inddark])
         append = [medianV, dark_current, on_current, delta_current]
         output_data.loc[len(output_data)] = append
-    
-    print(output_data)
 
 
 def rowskip(working_file):
