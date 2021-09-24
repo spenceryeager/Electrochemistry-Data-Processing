@@ -38,7 +38,19 @@ def onselect(vmin, vmax):
 def selection(indmin, indmax):
     potential_array = np.array(data['Potential/V'][indmin:indmax])
     current_array = np.array(data[' Current/A'][indmin:indmax])
-    print(potential_array)
+    dark_current = max(current_array)
+    on_current = min(current_array)
+    inddark = np.where(current_array == dark_current)
+    inddark = inddark[0][0]
+    indon = np.where(current_array == on_current)
+    indon = indon[0][0]
+    if inddark < indon:
+        # print(inddark, indon)
+        medianV = np.median(potential_array[inddark:indon])
+        
+    else:
+        medianV = np.median(potential_array[indon:inddark])
+        
 
 
 def rowskip(working_file):
