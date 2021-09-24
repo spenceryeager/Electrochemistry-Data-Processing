@@ -9,10 +9,10 @@ def main():
     global directory 
     directory = '/home/spenceryeager/Documents/calculations/chopper_data/'
     global data # data must be global to be called in onselect function
-    data = pd.read_csv(workingfile, sep=',', skiprows=rowskip(workingfile))
+    data = pd.read_csv(workingfile, sep=',', skiprows=rowskip(workingfile)) 
     columns = ['Potential (V)', 'Dark Current (A)', 'On Current (A)', 'Delta Current (A)']
-    global data_points # generated data will be appended to this
-    data_points = pd.DataFrame(columns = columns)
+    global output_data # generated data will be appended to this
+    output_data = pd.DataFrame(columns = columns)
     
     #Plotting
     fig, ax = plt.subplots()
@@ -23,6 +23,7 @@ def main():
     rectprops = dict(facecolor='blue', alpha=0.4)
     span = mwidgets.SpanSelector(ax, onselect, 'horizontal', rectprops=rectprops)
     plt.show()
+
 
 
 def onselect(vmin, vmax):
@@ -40,17 +41,22 @@ def selection(indmin, indmax):
     current_array = np.array(data[' Current/A'][indmin:indmax])
     dark_current = max(current_array)
     on_current = min(current_array)
+    delta_current = dark_current - on_current
     inddark = np.where(current_array == dark_current)
     inddark = inddark[0][0]
     indon = np.where(current_array == on_current)
     indon = indon[0][0]
     if inddark < indon:
-        # print(inddark, indon)
         medianV = np.median(potential_array[inddark:indon])
+        append = [medianV, dark_current, on_current, delta_current]
+        output_data.loc[len(output_data)] = append
         
     else:
         medianV = np.median(potential_array[indon:inddark])
-        
+        append = [medianV, dark_current, on_current, delta_current]
+        output_data.loc[len(output_data)] = append
+    
+    print(output_data)
 
 
 def rowskip(working_file):
